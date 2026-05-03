@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Kinerja Kimia Farma 2020–2023</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap');
+
+  :root {
+    --navy: #003366;
+    --blue: #0055A5;
+    --lblue: #1A7DC4;
+    --orange: #F47920;
+    --white: #FFFFFF;
+    --light: #F0F4F8;
+    --card: #EBF4FF;
+    --gray: #64748B;
+    --dgray: #1E293B;
+    --green: #16A34A;
+    --red: #DC2626;
+    --border: #D1E5F7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #EEF2F7;
+    color: var(--dgray);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, #004080 60%, var(--blue) 100%);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 24px rgba(0,51,102,0.35);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    border-bottom: 3px solid var(--orange);
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo-box {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 6px 14px;
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--blue);
+    letter-spacing: -0.5px;
+  }
+  .logo-box span { color: var(--orange); }
+  .header-title h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: 0.3px;
+  }
+  .header-title p { font-size: 11px; color: #A8C8F0; margin-top: 1px; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .badge {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 11px;
+    color: #A8C8F0;
+    font-weight: 600;
+  }
+  .badge-orange {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: var(--white);
+  }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    background: var(--white);
+    padding: 10px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .filter-label { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+  .filter-group { display: flex; align-items: center; gap: 8px; }
+  .filter-btn {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray);
+    background: var(--white);
+    cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .filter-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
+  .filter-select {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--dgray);
+    background: var(--white);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    outline: none;
+    cursor: pointer;
+  }
+  .filter-divider { width: 1px; height: 24px; background: var(--border); }
+  .update-info { margin-left: auto; font-size: 11px; color: var(--gray); }
+
+  /* ── MAIN LAYOUT ── */
+  .main { padding: 20px 28px 32px; max-width: 1600px; margin: 0 auto; }
+
+  /* ── KPI CARDS ── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .kpi-card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 16px 14px 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,51,102,0.07);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,51,102,0.13); }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .kpi-card.blue::before { background: var(--blue); }
+  .kpi-card.orange::before { background: var(--orange); }
+  .kpi-card.green::before { background: var(--green); }
+  .kpi-card.purple::before { background: #7C3AED; }
+  .kpi-card.teal::before { background: #0891B2; }
+  .kpi-card.pink::before { background: #DB2777; }
+
+  .kpi-icon {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .kpi-card.blue .kpi-icon { background: #EBF4FF; }
+  .kpi-card.orange .kpi-icon { background: #FFF7ED; }
+  .kpi-card.green .kpi-icon { background: #F0FDF4; }
+  .kpi-card.purple .kpi-icon { background: #F5F3FF; }
+  .kpi-card.teal .kpi-icon { background: #ECFEFF; }
+  .kpi-card.pink .kpi-icon { background: #FDF2F8; }
+
+  .kpi-label { font-size: 10px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .kpi-value { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--dgray); line-height: 1.1; margin-bottom: 6px; }
+  .kpi-growth { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; }
+  .kpi-growth.up { color: var(--green); }
+  .kpi-growth.down { color: var(--red); }
+  .kpi-sub { font-size: 10px; color: var(--gray); margin-top: 2px; }
+
+  /* ── CHART GRID ── */
+  .chart-grid-top {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .chart-grid-mid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .chart-grid-bot {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .chart-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,51,102,0.07);
+  }
+  .chart-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .chart-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--dgray);
+    letter-spacing: -0.2px;
+  }
+  .chart-subtitle { font-size: 11px; color: var(--gray); margin-top: 2px; font-weight: 500; }
+  .chart-badge {
+    background: var(--card);
+    color: var(--blue);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  /* ── TABLE ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .data-table thead th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 9px 12px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+  }
+  .data-table thead th:first-child { border-radius: 8px 0 0 0; }
+  .data-table thead th:last-child { border-radius: 0 8px 0 0; }
+  .data-table tbody tr { border-bottom: 1px solid #F0F4F8; transition: background 0.15s; }
+  .data-table tbody tr:hover { background: var(--card); }
+  .data-table tbody tr:last-child { border-bottom: none; }
+  .data-table td { padding: 9px 12px; color: var(--dgray); font-weight: 500; }
+  .data-table td.rank {
+    font-weight: 800;
+    color: var(--blue);
+    font-size: 13px;
+    width: 32px;
+  }
+  .rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .rank-1 { background: #FEF3C7; color: #92400E; }
+  .rank-2 { background: #F3F4F6; color: #374151; }
+  .rank-3 { background: #FEF3C7; color: #78350F; }
+  .rank-n { background: var(--card); color: var(--blue); }
+
+  .progress-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: #F0F4F8;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+  .bar-blue { background: linear-gradient(90deg, var(--blue), var(--lblue)); }
+  .bar-orange { background: linear-gradient(90deg, var(--orange), #F9A85D); }
+  .bar-green { background: linear-gradient(90deg, var(--green), #4ADE80); }
+
+  /* ── RATING TABLE ── */
+  .rating-row { display: flex; align-items: center; gap: 4px; }
+  .star { color: #F59E0B; font-size: 12px; }
+  .star-empty { color: #E5E7EB; font-size: 12px; }
+  .rating-val { font-weight: 700; font-size: 12px; color: var(--dgray); }
+  .rating-low { color: var(--red); }
+  .gap-badge {
+    display: inline-block;
+    background: #FEF2F2;
+    color: var(--red);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+
+  /* ── GEO MAP ── */
+  .geo-container { position: relative; }
+  .geo-legend {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .geo-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--gray); font-weight: 500; }
+  .geo-dot { width: 12px; height: 12px; border-radius: 3px; }
+
+  .province-map {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .prov-item {
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .prov-item:hover { transform: scale(1.03); }
+  .prov-name { font-size: 10px; font-weight: 700; }
+  .prov-val { font-size: 11px; font-weight: 800; }
+
+  /* ── SNAPSHOT ── */
+  .snapshot-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .snap-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,51,102,0.06);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .snap-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .snap-info { flex: 1; }
+  .snap-label { font-size: 10px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.6px; }
+  .snap-val { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--dgray); line-height: 1.2; }
+  .snap-sub { font-size: 10px; color: var(--gray); }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--navy);
+    color: #A8C8F0;
+    text-align: center;
+    padding: 14px;
+    font-size: 11px;
+    margin-top: 8px;
+  }
+  .footer span { color: var(--orange); font-weight: 700; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .kpi-row { grid-template-columns: repeat(3, 1fr); }
+    .chart-grid-top, .chart-grid-mid, .chart-grid-bot { grid-template-columns: 1fr; }
+    .province-map { grid-template-columns: repeat(3, 1fr); }
+    .snapshot-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 700px) {
+    .main { padding: 12px; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .province-map { grid-template-columns: repeat(2, 1fr); }
+    .snapshot-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="logo-box">kimia <span>farma</span></div>
+      <div class="header-title">
+        <h1>Dashboard Performance Analytics — Kimia Farma</h1>
+        <p>Analisis Kinerja Bisnis Tahun 2020–2023 | Big Data Analytics Intern · Rakamin Academy</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="badge">Sumber Data: Kimia Farma Internal</div>
+      <div class="badge badge-orange">Terakhir Diperbarui: 2024</div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="filter-label">🗂 Filter</span>
+  <div class="filter-group">
+    <span class="filter-label" style="font-size:10px">Tahun:</span>
+    <button class="filter-btn active" onclick="filterYear(this,'all')">Semua</button>
+    <button class="filter-btn" onclick="filterYear(this,'2020')">2020</button>
+    <button class="filter-btn" onclick="filterYear(this,'2021')">2021</button>
+    <button class="filter-btn" onclick="filterYear(this,'2022')">2022</button>
+    <button class="filter-btn" onclick="filterYear(this,'2023')">2023</button>
+  </div>
+  <div class="filter-divider"></div>
+  <div class="filter-group">
+    <span class="filter-label" style="font-size:10px">Provinsi:</span>
+    <select class="filter-select" id="provFilter">
+      <option value="all">Semua Provinsi</option>
+      <option>Jawa Barat</option>
+      <option>Sumatera Utara</option>
+      <option>Jawa Tengah</option>
+      <option>Jawa Timur</option>
+      <option>Sulawesi Utara</option>
+    </select>
+  </div>
+  <div class="filter-divider"></div>
+  <div class="filter-group">
+    <span class="filter-label" style="font-size:10px">Tipe Cabang:</span>
+    <select class="filter-select">
+      <option>Semua Tipe</option>
+      <option>Apotek</option>
+      <option>Klinik & Apotek</option>
+      <option>Klinik-Apotek-Laboratorium</option>
+    </select>
+  </div>
+  <div class="update-info">📅 Data periode: 1 Jan 2020 – 31 Des 2023 &nbsp;|&nbsp; Total Transaksi: 672.458 baris</div>
+</div>
+
+<div class="main">
+
+  <!-- SNAPSHOT -->
+  <div class="snapshot-grid">
+    <div class="snap-card">
+      <div class="snap-icon" style="background:#EBF4FF">💰</div>
+      <div class="snap-info">
+        <div class="snap-label">Total Nett Sales</div>
+        <div class="snap-val" id="snapSales">Rp 321,17 M</div>
+        <div class="snap-sub">Akumulasi 2020–2023</div>
+      </div>
+    </div>
+    <div class="snap-card">
+      <div class="snap-icon" style="background:#FFF7ED">📦</div>
+      <div class="snap-info">
+        <div class="snap-label">Total Transaksi</div>
+        <div class="snap-val" id="snapTrx">672.458</div>
+        <div class="snap-sub">Seluruh cabang</div>
+      </div>
+    </div>
+    <div class="snap-card">
+      <div class="snap-icon" style="background:#F0FDF4">📈</div>
+      <div class="snap-info">
+        <div class="snap-label">Total Nett Profit</div>
+        <div class="snap-val" id="snapProfit">Rp 91,21 M</div>
+        <div class="snap-sub">Keuntungan bersih</div>
+      </div>
+    </div>
+    <div class="snap-card">
+      <div class="snap-icon" style="background:#F5F3FF">🏪</div>
+      <div class="snap-info">
+        <div class="snap-label">Total Cabang Aktif</div>
+        <div class="snap-val">1.277</div>
+        <div class="snap-sub">Di seluruh Indonesia</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI CARDS -->
+  <div class="kpi-row">
+    <div class="kpi-card blue">
+      <div class="kpi-icon">💵</div>
+      <div class="kpi-label">Avg Nett Sales/Tahun</div>
+      <div class="kpi-value">Rp 80,29 M</div>
+      <div class="kpi-growth up">▲ Stabil sepanjang 2020–2023</div>
+      <div class="kpi-sub">Per tahun rata-rata</div>
+    </div>
+    <div class="kpi-card orange">
+      <div class="kpi-icon">🛒</div>
+      <div class="kpi-label">Avg Transaksi/Tahun</div>
+      <div class="kpi-value">168.114</div>
+      <div class="kpi-growth up">▲ Konsisten tiap tahun</div>
+      <div class="kpi-sub">Rata-rata 4 tahun</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-icon">💹</div>
+      <div class="kpi-label">Total Profit 4 Tahun</div>
+      <div class="kpi-value">Rp 91,21 M</div>
+      <div class="kpi-growth up">▲ Profit margin ~28,4%</div>
+      <div class="kpi-sub">Akumulasi 2020–2023</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-icon">📍</div>
+      <div class="kpi-label">Top Provinsi</div>
+      <div class="kpi-value">Jawa Barat</div>
+      <div class="kpi-growth up">▲ 198.723 transaksi</div>
+      <div class="kpi-sub">Kontributor #1 nasional</div>
+    </div>
+    <div class="kpi-card teal">
+      <div class="kpi-icon">⭐</div>
+      <div class="kpi-label">Avg Rating Cabang</div>
+      <div class="kpi-value">4,72 / 5</div>
+      <div class="kpi-growth up">▲ Kepuasan tinggi</div>
+      <div class="kpi-sub">Top 5 cabang rata-rata</div>
+    </div>
+    <div class="kpi-card pink">
+      <div class="kpi-icon">⚠️</div>
+      <div class="kpi-label">Avg Rating Transaksi</div>
+      <div class="kpi-value">3,99 / 5</div>
+      <div class="kpi-growth down">▼ Gap vs rating cabang</div>
+      <div class="kpi-sub">Perlu peningkatan layanan</div>
+    </div>
+  </div>
+
+  <!-- ROW 1: LINE CHART + DONUT -->
+  <div class="chart-grid-top">
+    <!-- Pendapatan per Tahun -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">📊 Perbandingan Pendapatan Kimia Farma dari Tahun ke Tahun</div>
+          <div class="chart-subtitle">Nett Sales, Nett Profit & Total Transaksi periode 2020–2023</div>
+        </div>
+        <div class="chart-badge">2020–2023</div>
+      </div>
+      <canvas id="lineChart" height="180"></canvas>
+    </div>
+    <!-- Distribusi Profit -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">🥧 Distribusi Nett Sales per Tahun</div>
+          <div class="chart-subtitle">Porsi kontribusi masing-masing tahun</div>
+        </div>
+      </div>
+      <canvas id="donutChart" height="200"></canvas>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;justify-content:center;">
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#64748B"><span style="width:12px;height:12px;border-radius:3px;background:#003366;display:inline-block"></span>2020: 25,07%</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#64748B"><span style="width:12px;height:12px;border-radius:3px;background:#0055A5;display:inline-block"></span>2021: 24,94%</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#64748B"><span style="width:12px;height:12px;border-radius:3px;background:#F47920;display:inline-block"></span>2022: 25,11%</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#64748B"><span style="width:12px;height:12px;border-radius:3px;background:#1A7DC4;display:inline-block"></span>2023: 24,98%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: TOP 10 TRANSAKSI + TOP 10 NETT SALES -->
+  <div class="chart-grid-mid">
+    <!-- Top 10 Transaksi -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">🏆 Top 10 Total Transaksi Cabang Provinsi</div>
+          <div class="chart-subtitle">Provinsi dengan aktivitas transaksi tertinggi 2020–2023</div>
+        </div>
+        <div class="chart-badge">Total: 672.458</div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Provinsi</th>
+            <th>Total Transaksi</th>
+            <th>Porsi</th>
+          </tr>
+        </thead>
+        <tbody id="trxTable"></tbody>
+      </table>
+    </div>
+
+    <!-- Top 10 Nett Sales -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">💰 Top 10 Nett Sales Cabang Provinsi</div>
+          <div class="chart-subtitle">Provinsi dengan kontribusi nett sales terbesar 2020–2023</div>
+        </div>
+        <div class="chart-badge">Dalam Miliar Rp</div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Provinsi</th>
+            <th>Nett Sales</th>
+            <th>Porsi</th>
+          </tr>
+        </thead>
+        <tbody id="salesTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ROW 3: RATING TABLE + GEO MAP -->
+  <div class="chart-grid-bot">
+    <!-- Top 5 Rating Anomali -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">⭐ Top 5 Cabang: Rating Tertinggi, Transaksi Terendah</div>
+          <div class="chart-subtitle">Gap antara kepuasan cabang dan pengalaman transaksi pelanggan</div>
+        </div>
+        <div class="chart-badge" style="background:#FEF2F2;color:#DC2626">Anomali Rating</div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nama Cabang</th>
+            <th>Provinsi</th>
+            <th>⭐ Rating Cabang</th>
+            <th>📋 Rating Transaksi</th>
+            <th>Gap</th>
+          </tr>
+        </thead>
+        <tbody id="ratingTable"></tbody>
+      </table>
+      <div style="margin-top:12px;padding:10px 12px;background:#FFF7ED;border-radius:10px;border-left:4px solid #F47920;">
+        <div style="font-size:11px;font-weight:700;color:#F47920;margin-bottom:3px">💡 Insight</div>
+        <div style="font-size:11px;color:#64748B;line-height:1.5">Cabang di Indonesia Timur mendapat apresiasi tinggi atas kehadirannya, namun kualitas proses transaksi masih perlu ditingkatkan — mengindikasikan gap pada infrastruktur pembayaran & ketersediaan stok.</div>
+      </div>
+    </div>
+
+    <!-- Geo Map Provinsi -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">🗺️ Indonesia's Geo Map — Total Profit per Provinsi</div>
+          <div class="chart-subtitle">Distribusi profit seluruh provinsi periode 2020–2023</div>
+        </div>
+        <div class="chart-badge">31 Provinsi</div>
+      </div>
+      <div class="province-map" id="geoMap"></div>
+      <div class="geo-legend">
+        <div class="geo-legend-item"><div class="geo-dot" style="background:#003366"></div>> Rp 20 M</div>
+        <div class="geo-legend-item"><div class="geo-dot" style="background:#0055A5"></div>Rp 10–20 M</div>
+        <div class="geo-legend-item"><div class="geo-dot" style="background:#1A7DC4"></div>Rp 5–10 M</div>
+        <div class="geo-legend-item"><div class="geo-dot" style="background:#A8C8F0"></div>Rp 1–5 M</div>
+        <div class="geo-legend-item"><div class="geo-dot" style="background:#EBF4FF"></div>< Rp 1 M</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BAR CHART HORIZONTAL -->
+  <div class="chart-card" style="margin-bottom:16px">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">📊 Perbandingan Transaksi vs Nett Sales per Provinsi (Top 10)</div>
+        <div class="chart-subtitle">Komparasi volume transaksi dan nilai penjualan bersih per provinsi terbesar</div>
+      </div>
+      <div class="chart-badge">Top 10 Provinsi</div>
+    </div>
+    <canvas id="barChart" height="120"></canvas>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  Dashboard Kinerja Kimia Farma 2020–2023 &nbsp;|&nbsp; Dibuat oleh <span>Nelvina Ardini Putri</span> &nbsp;|&nbsp; Big Data Analytics Intern · Rakamin Academy × Kimia Farma &nbsp;|&nbsp; Tools: Google BigQuery · Looker Studio · SQL
+</div>
+
+<script>
+// ── DATA ──
+const yearData = {
+  all: { sales: [80437605040, 80037846824, 80578445844, 80117292611], profit: [22842355149.65, 22731171469.5, 22883598882.8, 22757862557.9], trx: [168651, 167697, 168642, 167468] },
+  2020: { sales: [80437605040], profit: [22842355149.65], trx: [168651] },
+  2021: { sales: [80037846824], profit: [22731171469.5], trx: [167697] },
+  2022: { sales: [80578445844], profit: [22883598882.8], trx: [168642] },
+  2023: { sales: [80117292611], profit: [22757862557.9], trx: [167468] },
+};
+
+const trxData = [
+  {r:1, p:'Jawa Barat', v:198723},
+  {r:2, p:'Sumatera Utara', v:48178},
+  {r:3, p:'Jawa Tengah', v:46494},
+  {r:4, p:'Jawa Timur', v:34766},
+  {r:5, p:'Sulawesi Utara', v:33339},
+  {r:6, p:'Sumatera Barat', v:32014},
+  {r:7, p:'Aceh', v:21825},
+  {r:8, p:'Nusa Tenggara Barat', v:21069},
+  {r:9, p:'Kalimantan Timur', v:20243},
+  {r:10, p:'Riau', v:19607},
+];
+
+const salesData = [
+  {r:1, p:'Jawa Barat', v:94869594875},
+  {r:2, p:'Sumatera Utara', v:22952159897},
+  {r:3, p:'Jawa Tengah', v:22248101144},
+  {r:4, p:'Jawa Timur', v:16627080704},
+  {r:5, p:'Sulawesi Utara', v:15902759535},
+  {r:6, p:'Sumatera Barat', v:15314406695},
+  {r:7, p:'Aceh', v:10467971437},
+  {r:8, p:'Nusa Tenggara Barat', v:10036738806},
+  {r:9, p:'Kalimantan Timur', v:9714536616},
+  {r:10, p:'Riau', v:9354616403},
+];
+
+const ratingData = [
+  {r:1, name:'Klinik & Apotek', prov:'Jambi', rc:4.771, rt:4.003},
+  {r:2, name:'Apotek', prov:'Papua Barat', rc:4.725, rt:3.994},
+  {r:3, name:'Klinik & Apotek', prov:'Bangka Belitung', rc:4.683, rt:3.997},
+  {r:4, name:'Klinik-Apotek-Lab', prov:'Nusa Tenggara Timur', rc:4.672, rt:3.988},
+  {r:5, name:'Klinik-Apotek-Lab', prov:'Papua', rc:4.644, rt:3.998},
+];
+
+const profitData = [
+  {p:'Jawa Barat', v:26940703195, color:'#003366'},
+  {p:'Sumatera Utara', v:6517187359, color:'#0055A5'},
+  {p:'Jawa Tengah', v:6318005348, color:'#0055A5'},
+  {p:'Jawa Timur', v:4722764504, color:'#1A7DC4'},
+  {p:'Sulawesi Utara', v:4516325323, color:'#1A7DC4'},
+  {p:'Sumatera Barat', v:4349184029, color:'#1A7DC4'},
+  {p:'Aceh', v:2973594696, color:'#4A9FD4'},
+  {p:'NTB', v:2848908857, color:'#4A9FD4'},
+  {p:'Kalimantan Timur', v:2761089143, color:'#4A9FD4'},
+  {p:'Riau', v:2656281862, color:'#4A9FD4'},
+  {p:'Kepulauan Riau', v:2161206400, color:'#A8C8F0'},
+  {p:'Sumatera Selatan', v:1972617932, color:'#A8C8F0'},
+  {p:'Bali', v:1818321849, color:'#A8C8F0'},
+  {p:'Gorontalo', v:1659404715, color:'#A8C8F0'},
+  {p:'Kal. Selatan', v:1403598084, color:'#A8C8F0'},
+  {p:'Kal. Utara', v:1361478165, color:'#A8C8F0'},
+  {p:'Bangka Belitung', v:1331167971, color:'#A8C8F0'},
+  {p:'Kal. Barat', v:1324851681, color:'#A8C8F0'},
+  {p:'Sulawesi Tenggara', v:1313500930, color:'#A8C8F0'},
+  {p:'Maluku Utara', v:1272886972, color:'#A8C8F0'},
+  {p:'Maluku', v:1267522655, color:'#A8C8F0'},
+  {p:'DI Yogyakarta', v:1155417368, color:'#A8C8F0'},
+  {p:'DKI Jakarta', v:1101397529, color:'#A8C8F0'},
+  {p:'Sulawesi Selatan', v:1089277487, color:'#A8C8F0'},
+  {p:'Kal. Tengah', v:1054204027, color:'#A8C8F0'},
+  {p:'Banten', v:1047881941, color:'#A8C8F0'},
+  {p:'Jambi', v:1023975612, color:'#A8C8F0'},
+  {p:'Papua', v:989228729, color:'#D1E5F7'},
+  {p:'NTT', v:952402612, color:'#D1E5F7'},
+  {p:'Sulawesi Tengah', v:737652582, color:'#EBF4FF'},
+  {p:'Papua Barat', v:572948490, color:'#EBF4FF'},
+];
+
+// ── HELPERS ──
+function fmtB(v) {
+  if(v >= 1e9) return 'Rp '+(v/1e9).toFixed(2)+' M';
+  if(v >= 1e6) return 'Rp '+(v/1e6).toFixed(1)+' Jt';
+  return 'Rp '+v.toLocaleString('id');
+}
+function fmtNum(v) {
+  if(v >= 1e6) return (v/1e6).toFixed(2)+' Jt';
+  return v.toLocaleString('id');
+}
+function stars(n) {
+  let s = '';
+  for(let i=1;i<=5;i++) s += i<=Math.round(n) ? '★' : '☆';
+  return s;
+}
+function rankBadge(r) {
+  const cls = r<=3 ? `rank-${r}` : 'rank-n';
+  return `<span class="rank-badge ${cls}">${r}</span>`;
+}
+
+// ── POPULATE TABLES ──
+function buildTrxTable() {
+  const max = trxData[0].v;
+  const total = trxData.reduce((a,d)=>a+d.v,0);
+  const tbody = document.getElementById('trxTable');
+  tbody.innerHTML = trxData.map(d=>`
+    <tr>
+      <td class="rank">${rankBadge(d.r)}</td>
+      <td style="font-weight:600">${d.p}</td>
+      <td><div class="progress-bar-wrap">
+        <span style="min-width:52px;font-size:11px;font-weight:700">${fmtNum(d.v)}</span>
+        <div class="progress-bar"><div class="progress-fill bar-blue" style="width:${(d.v/max*100).toFixed(1)}%"></div></div>
+      </div></td>
+      <td style="font-size:11px;color:#64748B;font-weight:600">${(d.v/total*100).toFixed(1)}%</td>
+    </tr>`).join('');
+}
+
+function buildSalesTable() {
+  const max = salesData[0].v;
+  const total = salesData.reduce((a,d)=>a+d.v,0);
+  const tbody = document.getElementById('salesTable');
+  tbody.innerHTML = salesData.map(d=>`
+    <tr>
+      <td class="rank">${rankBadge(d.r)}</td>
+      <td style="font-weight:600">${d.p}</td>
+      <td><div class="progress-bar-wrap">
+        <span style="min-width:62px;font-size:11px;font-weight:700">${fmtB(d.v)}</span>
+        <div class="progress-bar"><div class="progress-fill bar-orange" style="width:${(d.v/max*100).toFixed(1)}%"></div></div>
+      </div></td>
+      <td style="font-size:11px;color:#64748B;font-weight:600">${(d.v/total*100).toFixed(1)}%</td>
+    </tr>`).join('');
+}
+
+function buildRatingTable() {
+  const tbody = document.getElementById('ratingTable');
+  tbody.innerHTML = ratingData.map(d=>{
+    const gap = (d.rc - d.rt).toFixed(2);
+    return `<tr>
+      <td class="rank">${rankBadge(d.r)}</td>
+      <td style="font-weight:600;font-size:11px">Kimia Farma - ${d.name}</td>
+      <td style="font-size:11px">${d.prov}</td>
+      <td>
+        <div class="rating-row">
+          <span style="color:#F59E0B;font-size:13px">${stars(d.rc)}</span>
+          <span class="rating-val" style="margin-left:4px">${d.rc.toFixed(2)}</span>
+        </div>
+      </td>
+      <td>
+        <div class="rating-row">
+          <span style="color:#EF4444;font-size:13px">${stars(d.rt)}</span>
+          <span class="rating-val rating-low" style="margin-left:4px">${d.rt.toFixed(2)}</span>
+        </div>
+      </td>
+      <td><span class="gap-badge">-${gap}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function buildGeoMap() {
+  const max = profitData[0].v;
+  const container = document.getElementById('geoMap');
+  container.innerHTML = profitData.map(d=>{
+    const pct = (d.v/max*100).toFixed(0);
+    const textColor = d.color === '#EBF4FF' || d.color === '#D1E5F7' || d.color === '#A8C8F0' ? '#1E293B' : '#FFFFFF';
+    return `<div class="prov-item" style="background:${d.color};color:${textColor}" title="${d.p}: ${fmtB(d.v)}">
+      <span class="prov-name">${d.p}</span>
+      <span class="prov-val">${fmtB(d.v)}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── CHARTS ──
+let lineChart, donutChart, barChart;
+
+function buildLineChart(key='all') {
+  const d = yearData[key];
+  const labels = key==='all' ? ['2020','2021','2022','2023'] : [key];
+  const ctx = document.getElementById('lineChart').getContext('2d');
+  if(lineChart) lineChart.destroy();
+  lineChart = new Chart(ctx, {
+    data: {
+      labels,
+      datasets: [
+        {
+          type:'bar',
+          label:'Nett Sales (Rp)',
+          data: d.sales,
+          backgroundColor: 'rgba(0,85,165,0.15)',
+          borderColor: '#0055A5',
+          borderWidth: 2,
+          borderRadius: 8,
+          yAxisID: 'y',
+        },
+        {
+          type:'line',
+          label:'Nett Profit (Rp)',
+          data: d.profit,
+          borderColor: '#F47920',
+          backgroundColor: 'rgba(244,121,32,0.1)',
+          borderWidth: 2.5,
+          pointBackgroundColor: '#F47920',
+          pointRadius: 5,
+          tension: 0.4,
+          fill: true,
+          yAxisID: 'y',
+        },
+        {
+          type:'line',
+          label:'Total Transaksi',
+          data: d.trx,
+          borderColor: '#16A34A',
+          backgroundColor: 'rgba(22,163,74,0.08)',
+          borderWidth: 2,
+          pointBackgroundColor: '#16A34A',
+          pointRadius: 4,
+          tension: 0.4,
+          fill: false,
+          yAxisID: 'y2',
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: { position:'bottom', labels: { font:{size:11,family:'Plus Jakarta Sans'}, usePointStyle:true, padding:14 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              if(ctx.datasetIndex < 2) return ` ${ctx.dataset.label}: ${fmtB(ctx.raw)}`;
+              return ` ${ctx.dataset.label}: ${ctx.raw.toLocaleString('id')}`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: { position:'left', grid:{color:'#F0F4F8'}, ticks:{callback:v=>fmtB(v), font:{size:10}} },
+        y2: { position:'right', grid:{drawOnChartArea:false}, ticks:{font:{size:10}} },
+        x: { grid:{color:'#F0F4F8'}, ticks:{font:{size:11,weight:'600'}} }
+      }
+    }
+  });
+}
+
+function buildDonutChart() {
+  const ctx = document.getElementById('donutChart').getContext('2d');
+  donutChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['2020','2021','2022','2023'],
+      datasets: [{
+        data: [80437605040, 80037846824, 80578445844, 80117292611],
+        backgroundColor: ['#003366','#0055A5','#F47920','#1A7DC4'],
+        borderWidth: 3,
+        borderColor: '#FFFFFF',
+        hoverOffset: 8,
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '68%',
+      plugins: {
+        legend: { display:false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${fmtB(ctx.raw)} (${(ctx.raw/321171190319*100).toFixed(1)}%)` } }
+      }
+    }
+  });
+}
+
+function buildBarChart() {
+  const ctx = document.getElementById('barChart').getContext('2d');
+  const labels = trxData.map(d=>d.p);
+  barChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label:'Total Transaksi',
+          data: trxData.map(d=>d.v),
+          backgroundColor: 'rgba(0,85,165,0.75)',
+          borderRadius: 6,
+          yAxisID: 'y',
+        },
+        {
+          label:'Nett Sales (Miliar Rp)',
+          data: salesData.map(d=>d.v/1e9),
+          backgroundColor: 'rgba(244,121,32,0.75)',
+          borderRadius: 6,
+          yAxisID: 'y2',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: { position:'bottom', labels:{ font:{size:11,family:'Plus Jakarta Sans'}, usePointStyle:true, padding:14 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => ctx.datasetIndex===0
+              ? ` Transaksi: ${ctx.raw.toLocaleString('id')}`
+              : ` Nett Sales: Rp ${ctx.raw.toFixed(2)} M`
+          }
+        }
+      },
+      scales: {
+        y: { position:'left', grid:{color:'#F0F4F8'}, ticks:{font:{size:10}}, title:{display:true,text:'Total Transaksi',font:{size:10}} },
+        y2: { position:'right', grid:{drawOnChartArea:false}, ticks:{font:{size:10},callback:v=>`Rp ${v}M`}, title:{display:true,text:'Nett Sales (Miliar Rp)',font:{size:10}} },
+        x: { grid:{display:false}, ticks:{font:{size:10,weight:'600'},maxRotation:30} }
+      }
+    }
+  });
+}
+
+// ── FILTER ──
+function filterYear(btn, year) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildLineChart(year==='all' ? 'all' : parseInt(year));
+
+  const d = yearData[year==='all' ? 'all' : parseInt(year)];
+  const totalSales = d.sales.reduce((a,v)=>a+v,0);
+  const totalProfit = d.profit.reduce((a,v)=>a+v,0);
+  const totalTrx = d.trx.reduce((a,v)=>a+v,0);
+  document.getElementById('snapSales').textContent = fmtB(totalSales);
+  document.getElementById('snapProfit').textContent = fmtB(totalProfit);
+  document.getElementById('snapTrx').textContent = totalTrx.toLocaleString('id');
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  buildTrxTable();
+  buildSalesTable();
+  buildRatingTable();
+  buildGeoMap();
+  buildLineChart();
+  buildDonutChart();
+  buildBarChart();
+});
+</script>
+</body>
+</html>
