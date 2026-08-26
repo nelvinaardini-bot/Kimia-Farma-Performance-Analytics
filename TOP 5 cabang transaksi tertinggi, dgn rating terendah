@@ -1,0 +1,15 @@
+SELECT
+  branch_name,
+  provinsi,
+  kota,
+  ROUND(AVG(rating_cabang), 2) AS rating_cabang,
+  ROUND(AVG(rating_transaksi), 2) AS rating_transaksi
+FROM `rakamin-kf-analytics-495118.Kimia_Farma.final_task_dataset`
+GROUP BY
+  branch_name,
+  provinsi,
+  kota
+ORDER BY
+  rating_cabang DESC,
+  rating_transaksi ASC
+LIMIT 5;
