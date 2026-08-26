@@ -1,0 +1,11 @@
+SELECT
+  EXTRACT(YEAR FROM date) AS tahun,
+  CONCAT('K', CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS kuartal,
+  SUM(nett_profit) AS total_profit
+FROM `rakamin-kf-analytics-495118.Kimia_Farma.final_task_dataset`
+GROUP BY
+  tahun,
+  kuartal
+ORDER BY
+  tahun,
+  kuartal;
