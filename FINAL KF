@@ -1,1 +1,11 @@
-
+SELECT
+  branch_name,
+  provinsi,
+  COUNT(transaction_id) AS total_transaksi
+FROM `rakamin-kf-analytics-495118.Kimia_Farma.final_task_dataset`
+GROUP BY
+  branch_name,
+  provinsi
+ORDER BY
+  total_transaksi DESC
+LIMIT 10;
