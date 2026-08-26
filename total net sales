@@ -1,0 +1,3 @@
+SELECT
+  SUM(nett_sales) AS total_nett_sales
+FROM `rakamin-kf-analytics-495118.Kimia_Farma.final_task_dataset`;
